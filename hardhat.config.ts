@@ -25,7 +25,7 @@ const config: HardhatUserConfig = {
     },
   },
   namedAccounts: {
-    deployer: 1
+    deployer: 0
   },
   blockscoutVerify: {
     blockscoutURL: "http://localhost:4000",
@@ -179,10 +179,10 @@ task("mint-nft", "mint a fully on-chain NFT")
   .addParam("tokenid", "token id")
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
     const { deployments, ethers } = hre;
-    const [ signer, minter ] = await ethers.getSigners();
+    const [ signer ] = await ethers.getSigners();
     let fac = await ethers.getContractFactory('NFT');
     let d = await hre.deployments.get('NFT');
-    const nftContract = fac.attach(d.address).connect(minter);
+    const nftContract = fac.attach(d.address).connect(signer);
     fac = await ethers.getContractFactory('BFS');
     d = await hre.deployments.get('BFS');
     const bfsContract = fac.attach(d.address).connect(signer);
@@ -215,16 +215,83 @@ task("mint-nft", "mint a fully on-chain NFT")
     console.log('Done');
   });
 
-task("get-nft", "retrieve data for an NFT")
-  .addOptionalParam("uri", "uri of the NFT", "")
-  .addOptionalParam("tokenid", "token id (if no uri is given)", "")
+task("mint-nfts", "mint many NFTs")
+  .addParam("name", "metadata file name")
+  .addOptionalParam("bfsaddress", "The BFS address", "")
+  .addOptionalParam("nftaddress", "The NFT address", "")
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
     const { deployments, ethers } = hre;
     const [ signer ] = await ethers.getSigners();
-    
-    const fac = await ethers.getContractFactory('BFS');
-    const d = await hre.deployments.get('BFS');
-    const bfsContract = fac.attach(d.address).connect(signer);
+    let fac = await ethers.getContractFactory('NFT');
+    let contractAddress = taskArgs.nftaddress;
+    if (contractAddress == "") {
+      const d = await deployments.get("NFT");
+      contractAddress = d.address;
+    }
+    const nftContract = fac.attach(contractAddress).connect(signer);
+    fac = await ethers.getContractFactory('BFS');
+    contractAddress = taskArgs.bfsaddress;
+    if (contractAddress == "") {
+      const d = await deployments.get("BFS");
+      contractAddress = d.address;
+    }
+    const bfsContract = fac.attach(contractAddress).connect(signer);
+
+    const fs = require('fs');
+    // find all subdirectories with this prefix
+    const onchainPrefix = taskArgs.name;
+    const filenameLst = fs.readdirSync('nfts').filter((s: string) => s.endsWith('html'));
+    console.log('tokenIds', filenameLst);
+    for (let j = 0; j < filenameLst.length; j++) {
+      const tokenId = ethers.BigNumber.from(filenameLst[j].split('.')[0]);
+      console.log('minting token', tokenId.toString());
+      const fullPath = 'nfts/' + filenameLst[j];
+        const rawdata = fs.readFileSync(fullPath);
+        // partition rawdata into chunks
+        const chunksize = 380_000;
+        let chunks = [];
+        for (let i = 0; i < rawdata.length; i += chunksize) {
+          chunks.push(rawdata.slice(i, i + chunksize));
+        }
+
+        const name = onchainPrefix + '/' + filenameLst[j];
+        for (let i = chunks.length - 1; i >= 0; i--) {
+          console.log('inscribe chunk', i, 'of file', fullPath, 'with', chunks[i].length, 'bytes')
+          // console.log(' and data:', chunks[i]);
+          const res = await bfsContract.store(name, i, chunks[i]);
+          console.log(res.hash);
+          await res.wait();
+        }
+      const minttx = await nftContract.safeMint(signer.address, tokenId, signer.address + '/' + name);
+      console.log('minted token', tokenId.toString(), 'with tx', minttx.hash);
+      await minttx.wait();
+      console.log('uri', await nftContract.tokenURI(tokenId));
+    }
+    console.log('Done');
+  });
+
+task("get-nft", "retrieve data for an NFT")
+  .addOptionalParam("uri", "uri of the NFT", "")
+  .addOptionalParam("tokenid", "token id (if no uri is given)", "")
+  .addOptionalParam("bfsaddress", "The BFS address", "")
+  .addOptionalParam("nftaddress", "The NFT address", "")
+  .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
+    const { deployments, ethers } = hre;
+    const [ signer ] = await ethers.getSigners();
+    let fac = await ethers.getContractFactory('NFT');
+    let contractAddress = taskArgs.nftaddress;
+    if (contractAddress == "") {
+      const d = await deployments.get("NFT");
+      contractAddress = d.address;
+    }
+    const nftContract = fac.attach(contractAddress).connect(signer);
+    fac = await ethers.getContractFactory('BFS');
+    contractAddress = taskArgs.bfsaddress;
+    if (contractAddress == "") {
+      const d = await deployments.get("BFS");
+      contractAddress = d.address;
+    }
+    const bfsContract = fac.attach(contractAddress).connect(signer);
 
     let uri = taskArgs.uri;
     if (uri.length == 0) {
@@ -239,7 +306,7 @@ task("get-nft", "retrieve data for an NFT")
       throw new Error('uri must start with bfs://');
     }
     let temp = uri.slice(6);
-    const uriParts = temp.split('/', 4);
+    const uriParts = temp.split('/', 5);
     
     if (uriParts[0] != 22213) {
       throw new Error('invalid chain ID');
@@ -251,10 +318,10 @@ task("get-nft", "retrieve data for an NFT")
     const filenamePre = uriParts[3];
     const fs = require('fs');
     fs.mkdirSync(filenamePre, { recursive: true });
-    let filename = filenamePre + '/metadata.json';
+    let filename = filenamePre + '/' + uriParts[4] // + '/metadata.json';
     let chunks = [];
     for (let nextChunk = 0; nextChunk < 1000000;) {
-      const res = await bfsContract.load(signer.address, filename, nextChunk);
+      const res = await bfsContract.load(addr, filename, nextChunk);
       const temp = ethers.utils.arrayify(res[0]);
       chunks.push(temp);
       nextChunk = res[1].toNumber();
@@ -262,7 +329,13 @@ task("get-nft", "retrieve data for an NFT")
     }
     const resultBuf = Buffer.concat(chunks);
     fs.writeFileSync(filename, resultBuf);
-    const md = JSON.parse(resultBuf.toString());
+    let md;
+    try {
+      md = JSON.parse(resultBuf.toString());
+    } catch (e) { 
+      console.log('NFT data:', resultBuf.toString());
+      return;
+    }
     console.log('NFT metadata', md);
 
     if (md?.image?.length) {
