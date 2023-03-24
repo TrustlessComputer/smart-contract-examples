@@ -1,7 +1,7 @@
 ## List of smart contracts
 
 - ERC20 - a simple contract that implements the ERC20 standard
-- Wrapped TRLS (WTRLS) - an ERC20-compatible, wrapped version of the TRLS native token
+- Wrapped JUICE (WJUICE) - an ERC20-compatible, wrapped version of the JUICE native token
 - BFS - a simple contract that allows users to store files on the blockchain. It enables data storage & retrieval under the URI format `bfs://<chain-id>/<storage-contract-address>/<user-address>/<file-name>`
 - NFT - a simple contract that allows users to mint fully on-chain NFTs
 
@@ -65,7 +65,7 @@ npx hardhat balanceERC20
 npx hardhat transferERC20 --from <your-address> --amount 0.1 --to <your-address>
 ```
 
-#### WTRLS
+#### WJUICE
 
 ```bash
 npx hardhat deposit --amount 0.4
