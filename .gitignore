@@ -8,8 +8,7 @@ typechain-types
 # Hardhat files
 cache
 artifacts
-
-# vim
+deployment
 
 # vim
 [._]*.s[a-v][a-z]
