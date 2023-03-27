@@ -1,15 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/utils/Counters.sol";
+
+
 contract BFS {
+	using Counters for Counters.Counter;
+	Counters.Counter private idCounter;
 	mapping(address => mapping(string => mapping(uint256 => bytes))) public dataStorage;
 	mapping(address => mapping(string => uint256)) public chunks; // max chunk index
+	mapping(address => mapping(string => uint256)) public bfsId;
+
+	constructor () {
+		idCounter.increment(); // start from 1
+	}
 
 	function store(string memory filename, uint256 chunkIndex, bytes memory _data) external {
 		dataStorage[msg.sender][filename][chunkIndex] = _data;
 		if (chunks[msg.sender][filename] < chunkIndex) {
 			chunks[msg.sender][filename] = chunkIndex;
 		}
+		bfsId[msg.sender][filename] = idCounter.current();
+		idCounter.increment();
 	}
 
 	function load(address addr, string memory filename, uint256 chunkIndex) public view returns (bytes memory, int256) {
@@ -22,4 +34,7 @@ contract BFS {
 		return chunks[addr][filename];
 	}
 
+	function getId(address addr, string memory filename) public view returns (uint256) {
+		return bfsId[addr][filename];
+	}
 }

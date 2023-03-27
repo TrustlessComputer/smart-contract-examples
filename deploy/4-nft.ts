@@ -5,11 +5,10 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts } = hre;
     const { deploy, log } = deployments;
     const { deployer } = await getNamedAccounts();
-    const st = await deployments.get("BFS");
 
     const result = await deploy('NFT', {
         from: deployer,
-        args: [st.address],
+        args: [],
         skipIfAlreadyDeployed: true,
         log: true
     });

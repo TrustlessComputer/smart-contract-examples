@@ -6,26 +6,22 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract NFT is ERC721, ERC721URIStorage, AccessControl {
+    using Counters for Counters.Counter;
+
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    Counters.Counter private _tokenIdCounter;
 
-    address public fileStorage;
-
-    constructor(address _store) ERC721("MyToken", "MTK") {
-        fileStorage = _store;
+    constructor() ERC721("MyToken", "MTK") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
     }
 
-    function _baseURI() internal view override returns (string memory) {
-        return string.concat("bfs://22213/", Strings.toHexString(address(fileStorage)), "/");
-    }
-
-    function safeMint(address to, uint256 tokenId, string memory uri)
-        public
-        onlyRole(MINTER_ROLE)
-    {
+    function safeMint(address to, string memory uri) public onlyRole(MINTER_ROLE) {
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
     }
