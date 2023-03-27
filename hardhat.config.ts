@@ -7,6 +7,9 @@ import './scripts/erc20.task';
 import './scripts/weth9.task';
 import './scripts/bfs.task';
 import './scripts/nft.task';
+import './scripts/ord.task';
+import './scripts/bns.task';
+import './scripts/multi.task';
 
 const config: HardhatUserConfig = {
   defaultNetwork: "mynw",

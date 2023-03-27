@@ -27,8 +27,9 @@ task("write-storage", "store file to BFS (chunked if needed)")
       console.log('inscribe chunk', i, 'with', chunks[i].length, 'bytes');
       const res = await c.store(taskArgs.filename, i, chunks[i]);
       console.log(res.hash);
-      await res.wait();
+      // await res.wait();
     }
+    console.log(`uri: bfs://22213/${contractAddress}/${signer.address}/${taskArgs.filename}`);
     console.log('Done');
   });
 
@@ -62,4 +63,21 @@ task("read-storage", "load file from BFS")
     // const comparedata = fs.readFileSync(taskArgs.filename);
     // console.log("loaded data matches ?", result.equals(comparedata));
 
+  });
+
+task("get-fs-id", "get file system id")
+  .addParam("filename", "file name")
+  .addOptionalParam("contract", "The BFS address", "")
+  .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
+    const { deployments, ethers } = hre;
+    const [ signer ] = await ethers.getSigners();
+    const fac = await ethers.getContractFactory('BFS');
+    let contractAddress = taskArgs.contract;
+    if (contractAddress == "") {
+      const d = await deployments.get("BFS");
+      contractAddress = d.address;
+    }
+    const c = fac.attach(contractAddress).connect(signer);
+    const res = await c.getId(signer.address, taskArgs.filename);
+    console.log(res);
   });

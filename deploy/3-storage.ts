@@ -9,11 +9,10 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const result = await deploy('BFS', {
         from: deployer,
         args: [],
-        skipIfAlreadyDeployed: true,
         log: true
     });
 };
 
-func.tags = ['2', 'BFS'];
+func.tags = ['3', 'BFS'];
 func.dependencies = [];
 export default func;

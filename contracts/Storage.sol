@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+error FileExists();
 
 contract BFS {
 	using Counters for Counters.Counter;
@@ -16,6 +17,9 @@ contract BFS {
 	}
 
 	function store(string memory filename, uint256 chunkIndex, bytes memory _data) external {
+		if (dataStorage[msg.sender][filename][chunkIndex].length > 0) {
+			revert FileExists();
+		}
 		dataStorage[msg.sender][filename][chunkIndex] = _data;
 		if (chunks[msg.sender][filename] < chunkIndex) {
 			chunks[msg.sender][filename] = chunkIndex;
