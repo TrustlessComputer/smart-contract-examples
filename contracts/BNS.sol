@@ -9,7 +9,7 @@ contract BNS is ERC721 {
         using Counters for Counters.Counter;
         Counters.Counter private _tokenIds;
 
-        mapping(uint256 => bytes) public registry;
+        mapping(bytes => uint256) public registry;
         mapping(bytes => bool) public registered;
 
         mapping(uint256 => address) public resolver;
@@ -24,8 +24,9 @@ contract BNS is ERC721 {
 
                 uint256 id = _tokenIds.current();
                 _mint(owner, id);
-                registry[id] = name;
+                registry[name] = id;
                 registered[name] = true;
+                resolver[id] = owner;
 
                 _tokenIds.increment();
                 return id;

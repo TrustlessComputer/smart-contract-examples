@@ -9,7 +9,6 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const result = await deploy('WETH9', {
         from: deployer,
         args: [],
-        skipIfAlreadyDeployed: true,
         log: true
     });
 };

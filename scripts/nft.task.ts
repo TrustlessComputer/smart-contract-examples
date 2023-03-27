@@ -73,7 +73,6 @@ task("mint-nfts", "mint many NFTs")
 
     const fs = require('fs');
     // find all subdirectories with this prefix
-    const onchainPrefix = taskArgs.name;
     const filenameLst = fs.readdirSync('nfts').filter((s: string) => s.endsWith(taskArgs.ext));
     
     for (let j = 0; j < filenameLst.length; j++) {
@@ -90,7 +89,7 @@ task("mint-nfts", "mint many NFTs")
           chunks.push(rawdata.slice(i, i + chunksize));
         }
 
-        const name = onchainPrefix + '/' + filenameLst[j];
+        const name = taskArgs.name + '/' + filenameLst[j];
         for (let i = chunks.length - 1; i >= 0; i--) {
           console.log('inscribe chunk', i, 'of file', fullPath, 'with', chunks[i].length, 'bytes')
           const res = await bfsContract.store(name, i, chunks[i]);
@@ -98,12 +97,12 @@ task("mint-nfts", "mint many NFTs")
         }
       }
       const uri = `bfs://22213/${bfsContract.address}/${signer.address}/${taskArgs.name}/${filenameLst[j]}`;
-      const evPrms = nftContract.once(nftContract.filters.Transfer(ethers.utils.getAddress('0x0000000000000000000000000000000000000000'), ethers.utils.getAddress(signer.address), null), async (from, to, tokenId, event: any) => {
-        console.log('minted:', event);
-        console.log('uri', await nftContract.tokenURI(tokenId));
-      });
+      // const evPrms = nftContract.once(nftContract.filters.Transfer(ethers.utils.getAddress('0x0000000000000000000000000000000000000000'), ethers.utils.getAddress(signer.address), null), async (from, to, tokenId, event: any) => {
+      //   console.log('minted:', event);
+      //   console.log('uri', await nftContract.tokenURI(tokenId));
+      // });
       const minttx = await nftContract.safeMint(signer.address, uri);
-      await Promise.all([minttx.wait(), evPrms]);
+      await minttx.wait();
     }
     await sleep(5000);
     console.log('Done');
