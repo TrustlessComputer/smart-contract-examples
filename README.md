@@ -9,7 +9,6 @@
 
 Use Hardhat to deploy the contracts and interact with them.
 
-```
 
 ### Clone the source code
 
@@ -50,6 +49,10 @@ npx hardhat compile
 ```bash
 # make sure the accounts in hardhat.config.ts are funded
 npx hardhat deploy # --reset # use "--reset" to overwrite existing deployments
+```
+
+#### Verify contract code
+```bash
 npx hardhat blockscout-verify contracts/ERC20.sol <your-deployed-address>
 npx hardhat blockscout-verify contracts/WETH9.sol <your-deployed-address>
 npx hardhat blockscout-verify contracts/Storage.sol <your-deployed-address>

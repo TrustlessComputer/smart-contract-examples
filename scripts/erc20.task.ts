@@ -26,7 +26,7 @@ task("balanceERC20", "Prints all account balances of ERC20 token")
     const c = fac.attach(contractAddress);
     for (const acc of accs) {
       const balance = await c.balanceOf(acc.address);
-      console.log(acc.address, ":", ethers.utils.formatEther(balance), "TTK");
+      console.log(acc.address, ":", ethers.utils.formatEther(balance), await c.symbol());
     }
   });
 

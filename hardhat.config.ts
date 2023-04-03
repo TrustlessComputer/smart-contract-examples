@@ -60,6 +60,24 @@ const config: HardhatUserConfig = {
         evmVersion: EVM_VERSION.EVM_BERLIN,
         optimizationRuns: 0,
       },
+      "Multisend": {
+        compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_17,
+        optimization: false,
+        evmVersion: EVM_VERSION.EVM_BERLIN,
+        optimizationRuns: 0,
+      },
+      "Ordinals": {
+        compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_17,
+        optimization: false,
+        evmVersion: EVM_VERSION.EVM_BERLIN,
+        optimizationRuns: 0,
+      },
+      "BNS": {
+        compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_17,
+        optimization: false,
+        evmVersion: EVM_VERSION.EVM_BERLIN,
+        optimizationRuns: 0,
+      }
     },
   },
 };

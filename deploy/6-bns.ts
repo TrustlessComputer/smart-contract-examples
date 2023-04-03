@@ -6,10 +6,23 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const { deploy, log } = deployments;
     const { deployer } = await getNamedAccounts();
 
-    const result = await deploy('BNS', {
+    await deploy('BNS', {
         from: deployer,
-        args: [],
-        log: true
+        proxy: {
+            proxyContract: 'OpenZeppelinTransparentProxy',
+            execute: {
+                init: {
+                    methodName: 'initialize',
+                    args: [],
+                },
+                // onUpgrade: {
+                //     methodName: 'afterUpgrade',
+                //     args: [],
+                // },
+            },
+        },
+        log: true,
+        waitConfirmations: 1,
     });
 };
 
