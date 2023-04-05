@@ -23,17 +23,18 @@ task("register", "register a domain")
 task("resolve", "resolve a domain")
 	.addParam("domain", "domain name")
 	.setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
-		if (!taskArgs.domain.endsWith(".tc")) {
-			console.log("domain must end with '.tc'");
-			return;
-		}
-		const dom = taskArgs.domain.slice(0, -3);
+		const dom = taskArgs.domain;
 		const { deployments, ethers } = hre;
 		const [signer] = await ethers.getSigners();
 
 		const fac = await ethers.getContractFactory("BNS");
 		const d = await deployments.get("BNS");
 		const c = fac.attach(d.address).connect(signer);
+		const isRegistered = await c.registered(Buffer.from(dom));
+		if (!isRegistered) {
+			console.log("domain not registered");
+			return;
+		}
 		const id = await c.registry(Buffer.from(dom));
 		const res = await c.resolver(id);
 		console.log(res);
