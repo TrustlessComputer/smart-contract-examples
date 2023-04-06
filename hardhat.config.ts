@@ -77,6 +77,18 @@ const config: HardhatUserConfig = {
         optimization: false,
         evmVersion: EVM_VERSION.EVM_BERLIN,
         optimizationRuns: 0,
+      },
+      "TransparentUpgradeableProxy": {
+        compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_17,
+        optimization: false,
+        evmVersion: EVM_VERSION.EVM_BERLIN,
+        optimizationRuns: 0,
+      },
+      "ProxyAdmin": {
+        compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_17,
+        optimization: false,
+        evmVersion: EVM_VERSION.EVM_BERLIN,
+        optimizationRuns: 0,
       }
     },
   },
