@@ -10,6 +10,7 @@ import './scripts/nft.task';
 import './scripts/ord.task';
 import './scripts/bns.task';
 import './scripts/multi.task';
+import './scripts/artifacts.task';
 
 const config: HardhatUserConfig = {
   defaultNetwork: "mynw",
