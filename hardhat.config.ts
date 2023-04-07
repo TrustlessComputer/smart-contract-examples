@@ -23,7 +23,7 @@ const config: HardhatUserConfig = {
     mynw: {
       url: "http://localhost:10002",
       accounts: {
-        mnemonic: "...",
+        mnemonic: "test test test test test test test test test test test junk",
       },
       // issue: https://github.com/NomicFoundation/hardhat/issues/3136
       // workaround: https://github.com/NomicFoundation/hardhat/issues/2672#issuecomment-1167409582
