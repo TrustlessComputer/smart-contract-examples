@@ -3,17 +3,17 @@ import {DeployFunction} from 'hardhat-deploy/types';
 
 const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts } = hre;
-    const { deploy, log } = deployments;
+    const { deploy, deterministic } = deployments;
     const { deployer } = await getNamedAccounts();
+    const w = await deployments.get('WTC');
 
-    await deploy('WETH9', {
+    await deploy('GWTC', {
         from: deployer,
-        args: [],
+        args: [w.address],
         log: true,
-        waitConfirmations: 1,
     });
 };
 
-func.tags = ['1', 'WETH9'];
-func.dependencies = [];
+func.tags = ['1', 'GWTC'];
+func.dependencies = ['WTC'];
 export default func;

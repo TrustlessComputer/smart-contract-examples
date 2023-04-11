@@ -8,8 +8,9 @@ interface IBFS {
 	function load(address addr, string memory filename, uint256 chunkIndex) external view returns (bytes memory, int256);
 	function count(address addr, string memory filename) external view returns (uint256);
 	function getId(address addr, string memory filename) external view returns (uint256);
-	function filenames(address addr) external view returns (string[] memory);
+	function filenames(address addr, uint256 i) external view returns (string memory);
 	function getAllAddresses() external view returns (address[] memory);
 	function getAllFilenames(address addr) external view returns (string[] memory);
+	function loadWithUri(string memory uri, uint256 chunkIndex) external view returns (bytes memory, int256);
 }
 

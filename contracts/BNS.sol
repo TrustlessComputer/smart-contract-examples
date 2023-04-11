@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 error InsufficientRegistrationFee();
 error NameAlreadyRegistered();
+error AlreadyUpgraded();
 
 contract BNS is ERC721Upgradeable, OwnableUpgradeable {
         using Counters for Counters.Counter;
@@ -19,6 +20,7 @@ contract BNS is ERC721Upgradeable, OwnableUpgradeable {
         uint256 public minRegistrationFee = 0 ether;
 
         bytes[] public names;
+        uint256 _version;
 
         event NameRegistered(bytes name, uint256 indexed id);
 
@@ -28,6 +30,11 @@ contract BNS is ERC721Upgradeable, OwnableUpgradeable {
         }
 
         function afterUpgrade(bytes[] memory _names) public {
+                if (_version == 0) {
+                        _version = 1;
+                } else {
+                        revert AlreadyUpgraded();
+                }
                 for (uint256 i = 0; i < _names.length; i++) {
                         if (registered[_names[i]]) {
                                 names.push(_names[i]);

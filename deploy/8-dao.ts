@@ -3,17 +3,18 @@ import {DeployFunction} from 'hardhat-deploy/types';
 
 const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts } = hre;
-    const { deploy, log } = deployments;
+    const { deploy, deterministic } = deployments;
     const { deployer } = await getNamedAccounts();
+    const gw = await deployments.get('GWTC');
 
-    await deploy('BFS', {
+    await deploy('TCDAO', {
         from: deployer,
         proxy: {
             proxyContract: 'OpenZeppelinTransparentProxy',
             execute: {
                 init: {
                     methodName: 'initialize',
-                    args: [],
+                    args: [gw.address],
                 },
                 // onUpgrade: {
                 //     methodName: 'afterUpgrade',
@@ -25,6 +26,6 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     });
 };
 
-func.tags = ['3', 'BFS'];
-func.dependencies = [];
+func.tags = ['8', 'TCDAO'];
+func.dependencies = ['GWTC'];
 export default func;
