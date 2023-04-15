@@ -11,20 +11,29 @@ import './scripts/ord.task';
 import './scripts/bns.task';
 import './scripts/multi.task';
 import './scripts/artifacts.task';
+import './scripts/auction.task';
+import './scripts/crowdfund.task';
+import './scripts/governance.task';
 
 const config: HardhatUserConfig = {
   defaultNetwork: "mynw",
   solidity: {
     compilers: [
       { version: "0.5.16", settings: {} },
-      { version: "0.8.17", settings: {} },
+      { version: "0.8.17", settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        }
+      },
     ]
   },
   networks: {
     mynw: {
-      url: "http://localhost:10002",
+      url: "http://127.0.0.1:8545",
       accounts: {
-        mnemonic: "test test test test test test test test test test test junk",
+        mnemonic: "horn hammer original lemon chapter weird gun pond fortune blush cupboard cat",
       },
       // issue: https://github.com/NomicFoundation/hardhat/issues/3136
       // workaround: https://github.com/NomicFoundation/hardhat/issues/2672#issuecomment-1167409582
