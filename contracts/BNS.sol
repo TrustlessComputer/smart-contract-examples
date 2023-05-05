@@ -29,24 +29,32 @@ contract BNS is ERC721Upgradeable, OwnableUpgradeable {
                 __Ownable_init();
         }
 
-        function afterUpgrade(bytes[] memory _names) public {
-                if (_version == 0) {
-                        _version = 1;
+        function afterUpgrade() public {
+                if (_version == 1) {
+                        _version = 2;
                 } else {
                         revert AlreadyUpgraded();
                 }
-                for (uint256 i = 0; i < _names.length; i++) {
-                        if (registered[_names[i]]) {
-                                names.push(_names[i]);
-                        }
-                }
         }
 
+        function toLower(bytes memory s) internal pure returns (bytes memory) {
+                bytes memory result = new bytes(s.length);
+                for (uint256 i = 0; i < s.length; i++) {
+                        if (uint8(s[i]) >= 65 && uint8(s[i]) <= 90) {
+                                // replace A-Z with a-z; will not affect non-ascii characters
+                                result[i] = bytes1(uint8(s[i]) + 32);
+                        } else {
+                                result[i] = s[i];
+                        }
+                }
+                return result;
+        }
 
         function register(address owner, bytes memory name) 
                 public payable
                 returns (uint256)
         {
+                name = toLower(name);
                 if (msg.value < minRegistrationFee) revert InsufficientRegistrationFee();
                 if (registered[name]) revert NameAlreadyRegistered();
 

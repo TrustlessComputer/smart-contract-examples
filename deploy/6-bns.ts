@@ -3,7 +3,7 @@ import {DeployFunction} from 'hardhat-deploy/types';
 
 const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts } = hre;
-    const { deploy, log } = deployments;
+    const { deploy, log, execute } = deployments;
     const { deployer } = await getNamedAccounts();
 
     await deploy('BNS', {
@@ -17,12 +17,12 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
                 },
                 onUpgrade: {
                     methodName: 'afterUpgrade',
-                    args: [[]],
+                    args: [],
                 },
             },
         },
         log: true,
-        waitConfirmations: 1,
+        // waitConfirmations: 2,
     });
 };
 
