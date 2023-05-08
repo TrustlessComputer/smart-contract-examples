@@ -23,3 +23,12 @@ contract Multisend {
     return true;
   }
 }
+
+interface TokenMultiSender {
+  function multiTransferToken_a4A(
+    address _token,
+    address[] calldata _addresses,
+    uint256[] calldata _amounts,
+    uint256 _amountSum
+  ) payable external;
+}
