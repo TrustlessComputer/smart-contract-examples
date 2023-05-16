@@ -48,3 +48,20 @@ task("transferERC20", "Transfer ERC20 token")
     const res = await c.transfer(taskArgs.to, ethers.utils.parseEther(taskArgs.amount));
     console.log(res);
   });
+
+
+task("renounceOwnerShip", "Remove ownership from sc")
+    .addOptionalParam("contract", "The token address", "")
+    .setAction(async (taskArgs: any, hre: HardhatRuntimeEnvironment) => {
+        const { deployments, ethers } = hre;
+        const signer = await ethers.getSigner(taskArgs.from);
+        let contractAddress = taskArgs.contract;
+        if (contractAddress == "") {
+            const d = await deployments.get("MyERC20");
+            contractAddress = d.address;
+        }
+        const fac = await ethers.getContractFactory("MyERC20");
+        const c = fac.attach(contractAddress).connect(signer);
+        const res = await c.renounceOwnership();
+        console.log(res);
+    });
