@@ -303,7 +303,7 @@ task("get-nft", "retrieve data for an NFT")
     try {
       md = JSON.parse(resultBuf.toString());
     } catch (e) { 
-      console.log('NFT data:', resultBuf.toString() || 'none');
+      console.log('NFT data:', resultBuf.toString('hex') || 'none');
       return;
     }
     console.log('NFT metadata', md);

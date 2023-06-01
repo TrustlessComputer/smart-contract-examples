@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "./interfaces/IStorage.sol";
 
 error FileExists();
 error InvalidURI();
@@ -13,7 +14,7 @@ error InvalidBfsResult();
 
 
 
-contract BFS is Initializable {
+contract BFS is IBFS, Initializable {
 	using Counters for Counters.Counter;
 	using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -25,7 +26,7 @@ contract BFS is Initializable {
 	mapping(address => string[]) public filenames;
 	EnumerableSet.AddressSet addresses;
 
-	event FileStored(address indexed addr, string filename, uint256 chunkIndex, uint256 indexed bfsId, string uri);
+	// event FileStored(address indexed addr, string filename, uint256 chunkIndex, uint256 indexed bfsId, string uri);
 
 	function initialize() public initializer {
 		idCounter.increment(); // start from 1

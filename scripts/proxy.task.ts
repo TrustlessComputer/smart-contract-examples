@@ -1,4 +1,4 @@
-import { task } from "hardhat/config";
+import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 task("change-admin", "Change the admin of a proxy")
@@ -30,3 +30,27 @@ task("change-admin", "Change the admin of a proxy")
     console.log("tx:", res.hash);
 
   });
+
+task("upgrade-by-admin", "Change the admin of a proxy")
+  .addOptionalParam("proxy", "The address of the proxy", "", types.string)
+  .addOptionalParam("admin", "The address of the admin", "", types.string)
+  .addOptionalParam("newimpl", "The address of the new implementation", "")
+  .addOptionalParam("from", "The address of the admin", "", types.string)
+  .setAction(async (taskArgs: any, hre: HardhatRuntimeEnvironment) => {
+    const { ethers } = hre;
+    let signer = await ethers.getImpersonatedSigner(taskArgs.from);
+
+    let proxy = taskArgs.proxy;
+
+    let newimpl = taskArgs.newimpl;
+
+    const fac = await ethers.getContractFactory("ProxyAdmin");
+    const data = fac.interface.encodeFunctionData("upgrade", [proxy, newimpl]);
+    const res = await signer.sendTransaction({
+      to: taskArgs.admin,
+      data: data,
+    });
+
+    console.log("tx:", res);
+  });
+
