@@ -192,12 +192,20 @@ task("transfer-nft", "transfer single NFT with given token ID")
   });
 
 task("transfer-nfts", "transfer many NFTs sequentially")
+  .addParam("from", "sender address", "", types.string)
   .addParam("tokenids", "list of token ids")
   .addParam("tos", "address to transfer to")
   .addOptionalParam("nftaddress", "The NFT address", "")
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
     const { deployments, ethers } = hre;
-    const [signer] = await ethers.getSigners();
+    let signerAddr = taskArgs.from;
+    let signer;
+    if (signerAddr == "") {
+      const [s] = await ethers.getSigners();
+      signer = s;
+    } else {
+      signer = await ethers.getSigner(signerAddr);
+    }
     const nonceManagedSigner = new NonceManager(signer);
     const fac = await ethers.getContractFactory('NFT');
     let contractAddress = taskArgs.nftaddress;
@@ -212,6 +220,12 @@ task("transfer-nfts", "transfer many NFTs sequentially")
       console.log('token ids and tos must be same length');
       return;
     }
+    for (let i = 0; i < tokenIds.length; i++) {
+      console.log('send', tokenIds[i].toString(), 'to', tos[i]);
+    }
+    await sleep(5000);
+
+
     for (let i = 0; i < tokenIds.length; i++) {
       const tokenId = tokenIds[i];
       const to = tos[i];

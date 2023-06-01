@@ -10,7 +10,6 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
         from: deployer,
         args: [],
         log: true,
-        waitConfirmations: 1,
     });
 };
 

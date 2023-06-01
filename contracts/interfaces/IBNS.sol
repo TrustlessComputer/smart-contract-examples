@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+
 // interface for BNS contract 
-interface IBNS {
+interface IBNS is IERC721 {
     event NameRegistered(bytes name, uint256 indexed id);
     function register(address owner, bytes memory name) external payable returns (uint256);
     function registerBatch(address owner, bytes[] memory names) external;
